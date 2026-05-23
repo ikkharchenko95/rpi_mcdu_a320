@@ -1,7 +1,7 @@
 import serial
 import time
-from XPlaneConnectX.XPlaneConnectX import XPlaneConnectX  # нужен XPlaneConnectX в PATH
 from dotenv import load_dotenv
+from XPlaneConnectX import XPlaneConnectX
 
 load_dotenv()
 
@@ -51,7 +51,7 @@ def main():
     try:
         ser = serial.Serial(SERIAL_PORT, BAUDRATE, timeout=SERIAL_TIMEOUT)
         print(f"[INFO] Connected toArduino: {SERIAL_PORT} @ {BAUDRATE}")
-        print("[INFO] Waitnig for input from MCDU A330...")
+        print("[INFO] Waiting for input from MCDU A330...")
 
         while True:
             line = ser.readline().decode("utf-8").strip()
