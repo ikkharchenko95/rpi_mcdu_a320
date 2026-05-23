@@ -7,7 +7,7 @@ from XPlaneConnectX import XPlaneConnectX
 load_dotenv()
 
 # Arduino connection settings
-SERIAL_PORT = int(os.getenv("SERIAL_PORT"))
+SERIAL_PORT = os.getenv("SERIAL_PORT")
 BAUDRATE    = int(os.getenv("BAUDRATE"))
 SERIAL_TIMEOUT = int(os.getenv("SERIAL_TIMEOUT"))
 
