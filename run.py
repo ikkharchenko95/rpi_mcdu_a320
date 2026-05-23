@@ -7,13 +7,13 @@ from XPlaneConnectX import XPlaneConnectX
 load_dotenv()
 
 # Arduino connection settings
-SERIAL_PORT = os.getenv("SERIAL_PORT")
-BAUDRATE    = os.getenv("BAUDRATE")
-SERIAL_TIMEOUT = os.getenv("SERIAL_TIMEOUT")
+SERIAL_PORT = int(os.getenv("SERIAL_PORT"))
+BAUDRATE    = int(os.getenv("BAUDRATE"))
+SERIAL_TIMEOUT = int(os.getenv("SERIAL_TIMEOUT"))
 
 # X‑Plane 12 settings
 XPLANE_IP = os.getenv("XPLANE_IP")
-XPLANE_PORT = os.getenv("XPLANE_PORT")
+XPLANE_PORT = int(os.getenv("XPLANE_PORT"))
 
 KEY_TO_COMMAND = {
     # INIT
