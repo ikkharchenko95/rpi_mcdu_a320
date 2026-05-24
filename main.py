@@ -1,0 +1,63 @@
+import os
+import time
+from dotenv import load_dotenv
+from XPlaneConnectX import XPlaneConnectX
+
+from lsk_keys_reader import ArduinoKeyReader
+from keyboard_keys_reader import KeyboardKeyReader
+
+from mcdu_mapping import McduMapping
+
+load_dotenv()
+
+# Arduino connection settings
+SERIAL_PORT = os.getenv("SERIAL_PORT")
+BAUDRATE    = int(os.getenv("BAUDRATE"))
+SERIAL_TIMEOUT = int(os.getenv("SERIAL_TIMEOUT"))
+MCDU_TYPE = int(os.getenv("MCDU_TYPE"))
+
+# X‑Plane 12 settings
+XPLANE_IP = os.getenv("XPLANE_IP")
+XPLANE_PORT = int(os.getenv("XPLANE_PORT"))
+
+KEY_TO_COMMAND = {}
+
+# Connect to X‑Plane
+xpc = XPlaneConnectX(ip=XPLANE_IP, port=XPLANE_PORT)
+
+def send_xplane_key(key):
+    timestamp = time.strftime("%H:%M:%S")
+    print(f"[{timestamp}] key: {repr(line)}")
+
+    cmd = KEY_TO_COMMAND.get(key, None)
+    if cmd:
+        xpc.sendCMND(cmd)
+        print(f"[XPLANE] Sent: {key} -> {cmd}")
+    else:
+        print(f"[XPLANE] No such command for: {key}")
+
+def main():
+
+    try:
+        # get mcdu mapping
+        mcdu_mapping = McduMapping(MCDU_TYPE)
+        KEY_TO_COMMAND = mcdu_mapping.get_mapping()
+    except Exception as e:
+        xpc.close()
+        print(f"[ERROR] Cannot read MCDU mappings from json config: {e}")
+        return
+
+    try:
+        on_key_pressed_callback = send_xplane_key
+        lsk_keys_reader = ArduinoKeyReader(on_key_pressed_callback, SERIAL_PORT, BAUDRATE, SERIAL_TIMEOUT)
+        keyboard_keys_reader = KeyboardKeyReader(on_key_pressed_callback)
+        
+        print("[INFO] Waiting for input from MCDU A330...")
+    except Exception as e:
+        if type(e) is not KeyboardInterrupt:
+            print(f"[ERROR] Error: {e}")
+        xpc.close()
+
+
+if __name__ == "__main__":
+    main()
