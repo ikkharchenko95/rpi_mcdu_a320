@@ -14,7 +14,7 @@ KEY_TO_COMMAND = {}
 
 def send_xplane_key(key):
     timestamp = time.strftime("%H:%M:%S")
-    print(f"[{timestamp}] key: {repr(line)}")
+    print(f"[{timestamp}] key: {repr(key)}")
 
     cmd = KEY_TO_COMMAND.get(key, None)
     if cmd:
@@ -22,6 +22,7 @@ def send_xplane_key(key):
         print(f"[XPLANE] Sent: {key} -> {cmd}")
     else:
         print(f"[XPLANE] No such command for: {key}")
+
 
 def init_envs() -> dict:
     return {
