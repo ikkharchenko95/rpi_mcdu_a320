@@ -25,7 +25,7 @@ class XPlaneConnectX():
         self.reverse_index = {}
         self.current_dref_values = {}
 
-    def close():
+    def close(self):
         self.sock.close()
         
     
