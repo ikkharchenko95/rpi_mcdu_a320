@@ -1,5 +1,6 @@
 import os
 import time
+import threading
 from dotenv import load_dotenv
 from xplane_connect import XPlaneConnectX
 
@@ -63,16 +64,18 @@ def main():
             baudrate=envs["BAUDRATE"],
             timeout=envs["SERIAL_TIMEOUT"]
         )
-        lsk_keys_reader.read()
+        lsk_keys_reader_thread = threading.Thread(target=lsk_keys_reader.read, daemon=True)
+        lsk_keys_reader_thread.start()
 
         keyboard_keys_reader = KeyboardKeyReader(
             on_key_pressed_callback=send_xplane_key
         )
 
         print("[INFO] Waiting for input from MCDU A330...")
+    except KeyboardInterrupt:
+        print("\n[INFO] Exiting application gracefully...")
     except Exception as e:
-        if type(e) is not KeyboardInterrupt:
-            print(f"[ERROR] Error: {e}")
+        print(f"[ERROR] Error: {e}")
         XPC.close()
 
 

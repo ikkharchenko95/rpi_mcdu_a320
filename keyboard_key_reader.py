@@ -7,7 +7,6 @@ class KeyboardKeyReader():
 
         self.on_key_pressed_callback = on_key_pressed_callback
         keyboard.on_press(self.read_keys_from_keyboard)
-        keyboard.wait()
         print("[INFO] Keyboard reader registered.")
 
     def read_keys_from_keyboard(self, event):
