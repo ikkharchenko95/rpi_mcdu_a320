@@ -14,14 +14,13 @@ KEY_TO_COMMAND = {}
 
 def send_xplane_key(key):
     global KEY_TO_COMMAND
+    global XPC
     timestamp = time.strftime("%H:%M:%S")
     print(f"[{timestamp}] key: {repr(key)}")
 
-    print(f"{KEY_TO_COMMAND}")
-
     cmd = KEY_TO_COMMAND.get(key, None)
     if cmd:
-        xpc.sendCMND(cmd)
+        XPC.sendCMND(cmd)
         print(f"[XPLANE] Sent: {key} -> {cmd}")
     else:
         print(f"[XPLANE] No such command for: {key}")
@@ -42,8 +41,10 @@ def main():
     # Init envs
     envs = init_envs()
 
+    global XPC
+
     # Connect to X‑Plane
-    xpc = XPlaneConnectX(ip=envs["XPLANE_IP"], port=envs["XPLANE_PORT"])
+    XPC = XPlaneConnectX(ip=envs["XPLANE_IP"], port=envs["XPLANE_PORT"])
 
     try:
         global KEY_TO_COMMAND
@@ -51,7 +52,7 @@ def main():
         mcdu_mapping = McduMapping(envs["MCDU_TYPE"])
         KEY_TO_COMMAND = mcdu_mapping.get_mapping()
     except Exception as e:
-        xpc.close()
+        XPC.close()
         print(f"[ERROR] Cannot read MCDU mappings from json config: {e}")
         return
 
@@ -72,7 +73,7 @@ def main():
     except Exception as e:
         if type(e) is not KeyboardInterrupt:
             print(f"[ERROR] Error: {e}")
-        xpc.close()
+        XPC.close()
 
 
 if __name__ == "__main__":
