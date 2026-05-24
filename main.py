@@ -44,6 +44,7 @@ def main():
     xpc = XPlaneConnectX(ip=envs["XPLANE_IP"], port=envs["XPLANE_PORT"])
 
     try:
+        global KEY_TO_COMMAND
         # Get MCDU mapping
         mcdu_mapping = McduMapping(envs["MCDU_TYPE"])
         KEY_TO_COMMAND = mcdu_mapping.get_mapping()
