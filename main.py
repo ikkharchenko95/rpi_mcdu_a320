@@ -46,6 +46,8 @@ def main():
         # Get MCDU mapping
         mcdu_mapping = McduMapping(envs["MCDU_TYPE"])
         KEY_TO_COMMAND = mcdu_mapping.get_mapping()
+
+        print(f"{KEY_TO_COMMAND}")
     except Exception as e:
         xpc.close()
         print(f"[ERROR] Cannot read MCDU mappings from json config: {e}")
