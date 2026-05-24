@@ -21,10 +21,10 @@ class McduMapping():
             return data["mcdu"]
 
     def set_mcdu_type_to_mappings(self, mcdu_type: int, map_config: dict[str, str]) -> dict[str, str]:
-        target_prefix = f"{MCDU_BASE_PREFIX}{mcdu_type}"
+        target_prefix = f"{self.MCDU_BASE_PREFIX}{mcdu_type}"
 
         for key, value in map_config.items():
-            if value.startswith(MCDU_BASE_PREFIX) and not value.startswith(target_prefix):
-                map_config[key] = target_prefix + value[len(MCDU_BASE_PREFIX):]
+            if value.startswith(self.MCDU_BASE_PREFIX) and not value.startswith(target_prefix):
+                map_config[key] = target_prefix + value[len(self.MCDU_BASE_PREFIX):]
 
         return map_config
