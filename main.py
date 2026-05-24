@@ -10,20 +10,7 @@ from mcdu_mapping import McduMapping
 
 load_dotenv()
 
-# Arduino connection settings
-SERIAL_PORT = os.getenv("SERIAL_PORT")
-BAUDRATE    = int(os.getenv("BAUDRATE"))
-SERIAL_TIMEOUT = int(os.getenv("SERIAL_TIMEOUT"))
-MCDU_TYPE = int(os.getenv("MCDU_TYPE"))
-
-# X‑Plane 12 settings
-XPLANE_IP = os.getenv("XPLANE_IP")
-XPLANE_PORT = int(os.getenv("XPLANE_PORT"))
-
 KEY_TO_COMMAND = {}
-
-# Connect to X‑Plane
-xpc = XPlaneConnectX(ip=XPLANE_IP, port=XPLANE_PORT)
 
 def send_xplane_key(key):
     timestamp = time.strftime("%H:%M:%S")
@@ -36,11 +23,27 @@ def send_xplane_key(key):
     else:
         print(f"[XPLANE] No such command for: {key}")
 
+def init_envs() -> dict:
+    return {
+        "SERIAL_PORT": os.getenv("SERIAL_PORT"),
+        "BAUDRATE": int(os.getenv("BAUDRATE")),
+        "SERIAL_TIMEOUT" = int(os.getenv("SERIAL_TIMEOUT")),
+        "MCDU_TYPE": int(os.getenv("MCDU_TYPE")),
+        "XPLANE_IP": os.getenv("XPLANE_IP"),
+        "XPLANE_PORT": int(os.getenv("XPLANE_PORT")),
+    }
+
 def main():
 
+    # Init envs
+    envs = init_envs()
+
+    # Connect to X‑Plane
+    xpc = XPlaneConnectX(ip=envs["XPLANE_IP"], port=envs["XPLANE_PORT"])
+
     try:
-        # get mcdu mapping
-        mcdu_mapping = McduMapping(MCDU_TYPE)
+        # Get MCDU mapping
+        mcdu_mapping = McduMapping(envs["MCDU_TYPE"])
         KEY_TO_COMMAND = mcdu_mapping.get_mapping()
     except Exception as e:
         xpc.close()
@@ -48,13 +51,11 @@ def main():
         return
 
     try:
-
-        # on_key_pressed_callback, serial_port: str, baudrate: int=9600, timeout=1
         lsk_keys_reader = ArduinoKeyReader(
             on_key_pressed_callback=send_xplane_key, 
-            serial_port=SERIAL_PORT,
-            baudrate=BAUDRATE,
-            timeout=SERIAL_TIMEOUT
+            serial_port=envs["SERIAL_PORT"],
+            baudrate=envs["BAUDRATE"],
+            timeout=envs["SERIAL_TIMEOUT"]
         )
         keyboard_keys_reader = KeyboardKeyReader(
             on_key_pressed_callback=send_xplane_key
