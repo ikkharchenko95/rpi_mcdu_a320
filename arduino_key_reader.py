@@ -36,7 +36,6 @@ class ArduinoKeyReader():
             print("[INFO] SIGTERM received, stop")
             raise e
         finally:
-            xpc.close()
             if "ser" in locals() and ser.is_open:
                 ser.close()
                 print("[INFO] Arduino port closed")
