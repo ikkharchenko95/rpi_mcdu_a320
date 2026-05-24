@@ -72,6 +72,10 @@ def main():
         )
 
         print("[INFO] Waiting for input from MCDU A330...")
+
+        while True:
+            time.sleep(1)
+
     except KeyboardInterrupt:
         print("\n[INFO] Exiting application gracefully...")
     except Exception as e:
