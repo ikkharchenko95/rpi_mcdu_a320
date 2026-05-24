@@ -27,7 +27,7 @@ def init_envs() -> dict:
     return {
         "SERIAL_PORT": os.getenv("SERIAL_PORT"),
         "BAUDRATE": int(os.getenv("BAUDRATE")),
-        "SERIAL_TIMEOUT" = int(os.getenv("SERIAL_TIMEOUT")),
+        "SERIAL_TIMEOUT": int(os.getenv("SERIAL_TIMEOUT")),
         "MCDU_TYPE": int(os.getenv("MCDU_TYPE")),
         "XPLANE_IP": os.getenv("XPLANE_IP"),
         "XPLANE_PORT": int(os.getenv("XPLANE_PORT")),
