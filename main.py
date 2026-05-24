@@ -13,10 +13,12 @@ load_dotenv()
 KEY_TO_COMMAND = {}
 
 def send_xplane_key(key):
+    global KEY_TO_COMMAND
     timestamp = time.strftime("%H:%M:%S")
     print(f"[{timestamp}] key: {repr(key)}")
 
     print(f"{KEY_TO_COMMAND}")
+
     cmd = KEY_TO_COMMAND.get(key, None)
     if cmd:
         xpc.sendCMND(cmd)
