@@ -24,6 +24,9 @@ class XPlaneConnectX():
         self.port = port
         self.reverse_index = {}
         self.current_dref_values = {}
+
+    def close():
+        self.sock.close()
         
     
     def subscribeDREFs(self, subscribed_drefs:list[Tuple[str,int]], history:float=0.0, timeout:float=5.0, retry_interval:float=0.5) -> None:

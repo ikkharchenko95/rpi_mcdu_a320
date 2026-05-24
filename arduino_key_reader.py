@@ -10,18 +10,18 @@ class ArduinoKeyReader():
         self.serial_port = serial_port
         self.baudrate = baudrate
         self.timeout = timeout
-        self.ser = connect()
+        self.ser = self.connect()
         print(f"[INFO] Connected to Arduino: {SERIAL_PORT} @ {BAUDRATE}")
         print("[INFO] Arduino reader registered.")
 
-    def connect():
+    def connect(self):
         try:
             return serial.Serial(self.serial_port, self.baudrate, timeout=self.timeout)
         except serial.SerialException as e:
             print(f"[ERROR] Serial: {e}")
             raise e
     
-    def read():
+    def read(self):
         try:
             while True:
                 line = self.ser.readline().decode("utf-8").strip()
