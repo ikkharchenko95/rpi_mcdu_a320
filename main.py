@@ -48,9 +48,17 @@ def main():
         return
 
     try:
-        on_key_pressed_callback = send_xplane_key
-        lsk_keys_reader = ArduinoKeyReader(on_key_pressed_callback, SERIAL_PORT, BAUDRATE, SERIAL_TIMEOUT)
-        keyboard_keys_reader = KeyboardKeyReader(on_key_pressed_callback)
+
+        # on_key_pressed_callback, serial_port: str, baudrate: int=9600, timeout=1
+        lsk_keys_reader = ArduinoKeyReader(
+            on_key_pressed_callback=send_xplane_key, 
+            serial_port=SERIAL_PORT,
+            baudrate=BAUDRATE,
+            timeout=SERIAL_TIMEOUT
+        )
+        keyboard_keys_reader = KeyboardKeyReader(
+            on_key_pressed_callback=send_xplane_key
+        )
 
         print("[INFO] Waiting for input from MCDU A330...")
     except Exception as e:
