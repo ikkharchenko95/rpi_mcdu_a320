@@ -1,6 +1,5 @@
 import serial
 import time
-import keyboard
 
 class ArduinoKeyReader():
     def __init__(self, on_key_pressed_callback, serial_port: str, baudrate: int=9600, timeout=1) -> None:
