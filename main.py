@@ -16,6 +16,7 @@ def send_xplane_key(key):
     timestamp = time.strftime("%H:%M:%S")
     print(f"[{timestamp}] key: {repr(key)}")
 
+    print(f"{KEY_TO_COMMAND}")
     cmd = KEY_TO_COMMAND.get(key, None)
     if cmd:
         xpc.sendCMND(cmd)
@@ -46,8 +47,6 @@ def main():
         # Get MCDU mapping
         mcdu_mapping = McduMapping(envs["MCDU_TYPE"])
         KEY_TO_COMMAND = mcdu_mapping.get_mapping()
-
-        print(f"{KEY_TO_COMMAND}")
     except Exception as e:
         xpc.close()
         print(f"[ERROR] Cannot read MCDU mappings from json config: {e}")
@@ -60,6 +59,8 @@ def main():
             baudrate=envs["BAUDRATE"],
             timeout=envs["SERIAL_TIMEOUT"]
         )
+        lsk_keys_reader.read()
+
         keyboard_keys_reader = KeyboardKeyReader(
             on_key_pressed_callback=send_xplane_key
         )

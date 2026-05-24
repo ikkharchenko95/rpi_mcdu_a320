@@ -23,7 +23,6 @@ class ArduinoKeyReader():
     def read(self):
         try:
             while True:
-                print("Try to read line from arduino...")
                 line = self.ser.readline().decode("utf-8").strip()
                 if line:
                     print(f"[TRACE] Got line from serial port: {line}")
