@@ -10,7 +10,7 @@ class McduMapping():
         self.mapping = self.read_mcdu_key_mapping()
         self.mapping = self.set_mcdu_type_to_mappings(mcdu_type, self.mapping)
 
-    def get_mapping():
+    def get_mapping(self):
         return self.mapping
 
     def read_mcdu_key_mapping(self) -> dict[str, str]:
