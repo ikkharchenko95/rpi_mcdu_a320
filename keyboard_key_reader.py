@@ -10,7 +10,6 @@ class KeyboardKeyReader():
         print("[INFO] Keyboard reader registered.")
 
     def read_keys_from_keyboard(self, event):
-        # Check if the pressed key is a Function key (F1-F12)
         key_name = event.name.upper()
         print(f"[TRACE] Got key press: {event.name.upper()}")
         self.on_key_pressed_callback(key_name)

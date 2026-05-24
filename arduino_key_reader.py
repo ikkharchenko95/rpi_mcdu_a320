@@ -11,7 +11,7 @@ class ArduinoKeyReader():
         self.baudrate = baudrate
         self.timeout = timeout
         self.ser = self.connect()
-        print(f"[INFO] Connected to Arduino: {SERIAL_PORT} @ {BAUDRATE}")
+        print(f"[INFO] Connected to Arduino: {serial_port} @ {baudrate}")
         print("[INFO] Arduino reader registered.")
 
     def connect(self):
