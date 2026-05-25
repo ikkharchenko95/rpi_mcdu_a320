@@ -1,8 +1,10 @@
 import serial
-import time
 
-class ArduinoKeyReader():
-    def __init__(self, on_key_pressed_callback, serial_port: str, baudrate: int=9600, timeout=1) -> None:
+from reader.key_reader import KeyReader
+
+class ArduinoKeyReader(KeyReader):
+    def __init__(self, on_key_pressed_callback, serial_port: str, baudrate: int = 9600, timeout=1) -> None:
+        super().__init__()
         if on_key_pressed_callback is None:
             raise ValueError("[ERROR] ArduinoKeyReader: on_key_pressed_callback is not set, stopping")
         self.on_key_pressed_callback = on_key_pressed_callback
@@ -31,11 +33,11 @@ class ArduinoKeyReader():
         except serial.SerialException as e:
             print(f"[ERROR] Serial: {e}")
             raise e
-        except KeyboardInterrupt:
+        except KeyboardInterrupt as e:
             print("[INFO] SIGTERM received, stop")
             raise e
         finally:
-            if "ser" in locals() and ser.is_open:
-                ser.close()
+            if "ser" in locals() and self.ser.is_open:
+                self.ser.close()
                 print("[INFO] Arduino port closed")
             return

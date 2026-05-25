@@ -2,3 +2,4 @@ serial
 keyboard
 pandas
 dotenv
+pyserial

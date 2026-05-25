@@ -1,7 +1,10 @@
 import keyboard
 
-class KeyboardKeyReader():
+from reader.key_reader import KeyReader
+
+class KeyboardKeyReader(KeyReader):
     def __init__(self, on_key_pressed_callback) -> None:
+        super().__init__()
         if on_key_pressed_callback is None:
             raise ValueError("[ERROR] KeyboardKeyReader: on_key_pressed_callback is not set, stopping")
 

@@ -2,30 +2,15 @@ import os
 import time
 import threading
 from dotenv import load_dotenv
-from xplane_connect import XPlaneConnectX
 
-from arduino_key_reader import ArduinoKeyReader
-from keyboard_key_reader import KeyboardKeyReader
+from adapter.sim.impl.xplane_adapter import XPlaneAdapter
 
-from mcdu_mapping import McduMapping
+from reader.impl.arduino_key_reader import ArduinoKeyReader
+from reader.impl.keyboard_key_reader import KeyboardKeyReader
+
+from mapping.mcdu_mapping import McduMapping
 
 load_dotenv()
-
-KEY_TO_COMMAND = {}
-
-def send_xplane_key(key):
-    global KEY_TO_COMMAND
-    global XPC
-    timestamp = time.strftime("%H:%M:%S")
-    print(f"[{timestamp}] key: {repr(key)}")
-
-    cmd = KEY_TO_COMMAND.get(key, None)
-    if cmd:
-        XPC.sendCMND(cmd)
-        print(f"[XPLANE] Sent: {key} -> {cmd}")
-    else:
-        print(f"[XPLANE] No such command for: {key}")
-
 
 def init_envs() -> dict:
     return {
@@ -42,33 +27,30 @@ def main():
     # Init envs
     envs = init_envs()
 
-    global XPC
-
-    # Connect to X‑Plane
-    XPC = XPlaneConnectX(ip=envs["XPLANE_IP"], port=envs["XPLANE_PORT"])
-
+    xpc = None
     try:
-        global KEY_TO_COMMAND
         # Get MCDU mapping
         mcdu_mapping = McduMapping(envs["MCDU_TYPE"])
-        KEY_TO_COMMAND = mcdu_mapping.get_mapping()
-    except Exception as e:
-        XPC.close()
-        print(f"[ERROR] Cannot read MCDU mappings from json config: {e}")
-        return
 
-    try:
+        # Connect to X‑Plane
+        xpc = XPlaneAdapter(xplane_ip=envs["XPLANE_IP"],
+                            xplane_port=envs["XPLANE_PORT"],
+                            mcdu_mapping=mcdu_mapping)
+
+        # Init Arduino key reader
         lsk_keys_reader = ArduinoKeyReader(
-            on_key_pressed_callback=send_xplane_key, 
+            on_key_pressed_callback=xpc.send_command,
             serial_port=envs["SERIAL_PORT"],
             baudrate=envs["BAUDRATE"],
             timeout=envs["SERIAL_TIMEOUT"]
         )
-        lsk_keys_reader_thread = threading.Thread(target=lsk_keys_reader.read, daemon=True)
+        lsk_keys_reader_thread = threading.Thread(target=lsk_keys_reader.read,
+                                                  daemon=True)
         lsk_keys_reader_thread.start()
 
+        # Init keyboard key reader
         keyboard_keys_reader = KeyboardKeyReader(
-            on_key_pressed_callback=send_xplane_key
+            on_key_pressed_callback=xpc.send_command
         )
 
         print("[INFO] Waiting for input from MCDU A330...")
@@ -80,7 +62,8 @@ def main():
         print("\n[INFO] Exiting application gracefully...")
     except Exception as e:
         print(f"[ERROR] Error: {e}")
-        XPC.close()
+        if None is not xpc:
+            xpc.close()
 
 
 if __name__ == "__main__":
