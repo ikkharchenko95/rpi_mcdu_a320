@@ -1,3 +1,6 @@
+import time
+import threading
+
 import serial
 
 from reader.key_reader import KeyReader
@@ -15,11 +18,16 @@ class ArduinoKeyReader(KeyReader):
         print(f"[INFO] Connected to Arduino: {ARDUINO_SERIAL_PORT} @ {ARDUINO_BAUDRATE}")
         print("[INFO] Arduino reader registered.")
 
+    def __del__(self):
+        print(f"[INFO] Arduino serial port closed")
+        self.ser.close()
+
     def connect(self):
         try:
             return serial.Serial(self.ARDUINO_SERIAL_PORT, self.ARDUINO_BAUDRATE, timeout=self.timeout)
         except serial.SerialException as e:
             print(f"[ERROR] Serial: {e}")
+            self.on_disconnect()
             raise e
     
     def read(self):
@@ -41,3 +49,12 @@ class ArduinoKeyReader(KeyReader):
                 self.ser.close()
                 print("[INFO] Arduino port closed")
             return
+
+    def on_disconnect(self):
+        print("[ERROR] Arduino disconnected, trying to reconnect in 3 seconds...")
+        self.try_to_connect()
+
+    def try_to_connect(self):
+        time.sleep(3)
+        thread = threading.Thread(target=self.connect)
+        thread.start()
