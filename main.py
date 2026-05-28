@@ -40,8 +40,8 @@ def main():
         # Init Arduino key reader
         lsk_keys_reader = ArduinoKeyReader(
             on_key_pressed_callback=xpc.send_command,
-            ARDUINO_SERIAL_PORT=envs["ARDUINO_SERIAL_PORT"],
-            ARDUINO_BAUDRATE=envs["ARDUINO_BAUDRATE"],
+            serial_port=envs["ARDUINO_SERIAL_PORT"],
+            baudrate=envs["ARDUINO_BAUDRATE"],
             timeout=envs["ARDUINO_SERIAL_TIMEOUT"]
         )
         lsk_keys_reader_thread = threading.Thread(target=lsk_keys_reader.read,
