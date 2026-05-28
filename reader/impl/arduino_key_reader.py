@@ -3,21 +3,21 @@ import serial
 from reader.key_reader import KeyReader
 
 class ArduinoKeyReader(KeyReader):
-    def __init__(self, on_key_pressed_callback, serial_port: str, baudrate: int = 9600, timeout=1) -> None:
+    def __init__(self, on_key_pressed_callback, ARDUINO_SERIAL_PORT: str, ARDUINO_BAUDRATE: int = 9600, timeout=1) -> None:
         super().__init__()
         if on_key_pressed_callback is None:
             raise ValueError("[ERROR] ArduinoKeyReader: on_key_pressed_callback is not set, stopping")
         self.on_key_pressed_callback = on_key_pressed_callback
-        self.serial_port = serial_port
-        self.baudrate = baudrate
+        self.ARDUINO_SERIAL_PORT = ARDUINO_SERIAL_PORT
+        self.ARDUINO_BAUDRATE = ARDUINO_BAUDRATE
         self.timeout = timeout
         self.ser = self.connect()
-        print(f"[INFO] Connected to Arduino: {serial_port} @ {baudrate}")
+        print(f"[INFO] Connected to Arduino: {ARDUINO_SERIAL_PORT} @ {ARDUINO_BAUDRATE}")
         print("[INFO] Arduino reader registered.")
 
     def connect(self):
         try:
-            return serial.Serial(self.serial_port, self.baudrate, timeout=self.timeout)
+            return serial.Serial(self.ARDUINO_SERIAL_PORT, self.ARDUINO_BAUDRATE, timeout=self.timeout)
         except serial.SerialException as e:
             print(f"[ERROR] Serial: {e}")
             raise e
