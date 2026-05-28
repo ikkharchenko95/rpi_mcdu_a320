@@ -27,7 +27,7 @@ def get_serial_devices():
 
         # Build clear description for output to menu
         label = (
-            f"🔌 {port.device} | {port.manufacturer or 'Unknown'} "
+            f"> {port.device} | {port.manufacturer or 'Unknown'} "
             f"- {port.description or 'No description'} "
             f"[SN: {port.serial_number or 'N/A'}]"
         )
