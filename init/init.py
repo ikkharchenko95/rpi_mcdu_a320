@@ -72,7 +72,7 @@ def main():
     env_path = os.path.join(os.getcwd(), ".env")
 
     # Set env var
-    set_key(env_path, "ARDUINO_PORT", target_path)
+    set_key(env_path, "ARDUINO_SERIAL_PORT", target_path)
 
     print("\n" + "=" * 50)
     print("✅ Set up successfully!")
