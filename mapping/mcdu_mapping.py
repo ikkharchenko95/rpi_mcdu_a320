@@ -16,7 +16,7 @@ class McduMapping():
         return self.mapping[command]
 
     def read_mcdu_key_mapping(self) -> dict[str, str]:
-        with open('../config/key_config.json', 'r') as config_file:
+        with open('config/key_config.json', 'r') as config_file:
             data = json.load(config_file)
             if "mcdu" not in data:
                 raise ValueError("mcdu object not exists in map_config.json")
