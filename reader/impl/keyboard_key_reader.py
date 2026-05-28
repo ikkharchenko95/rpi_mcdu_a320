@@ -12,6 +12,10 @@ class KeyboardKeyReader(KeyReader):
         keyboard.on_press(self.read_keys_from_keyboard)
         print("[INFO] Keyboard reader registered.")
 
+    def __del__(self):
+        print("[INFO] Keyboard reader registered.")
+        keyboard.unhook(self.read_keys_from_keyboard)
+
     def read_keys_from_keyboard(self, event):
         key_name = event.name.upper()
         print(f"[TRACE] Got key press: {event.name.upper()}")
