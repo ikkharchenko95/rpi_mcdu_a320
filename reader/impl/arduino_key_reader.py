@@ -40,6 +40,7 @@ class ArduinoKeyReader(KeyReader):
 
         except serial.SerialException as e:
             print(f"[ERROR] Serial: {e}")
+            self.on_disconnect()
             raise e
         except KeyboardInterrupt as e:
             print("[INFO] SIGTERM received, stop")
