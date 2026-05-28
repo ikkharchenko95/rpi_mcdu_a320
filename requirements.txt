@@ -3,3 +3,5 @@ keyboard
 pandas
 dotenv
 pyserial
+pick
+python-dotenv
