@@ -1,5 +1,4 @@
 import time
-import threading
 
 import serial
 
@@ -10,52 +9,64 @@ class ArduinoKeyReader(KeyReader):
         super().__init__()
         if on_key_pressed_callback is None:
             raise ValueError("[ERROR] ArduinoKeyReader: on_key_pressed_callback is not set, stopping")
+
         self.on_key_pressed_callback = on_key_pressed_callback
         self.serial_port = serial_port
         self.baudrate = baudrate
         self.timeout = timeout
-        self.ser = self.connect()
-        print(f"[INFO] Connected to Arduino: {serial_port} @ {baudrate}")
-        print("[INFO] Arduino reader registered.")
 
-    def __del__(self):
-        print(f"[INFO] Arduino serial port closed")
-        self.ser.close()
+        self.is_running = True
+        self.ser = None
+
+        self.connect()
+        print("[INFO] Arduino reader registered.")
 
     def connect(self):
         try:
-            return serial.Serial(self.serial_port, self.baudrate, timeout=self.timeout)
+            if self.ser and self.ser.is_open:
+                self.ser.close()
+
+            self.ser = serial.Serial(self.serial_port, self.baudrate, timeout=self.timeout)
+            print(f"[INFO] Connected to Arduino: {self.serial_port} @ {self.baudrate}")
+            return True
         except serial.SerialException as e:
-            print(f"[ERROR] Serial: {e}")
-            self.on_disconnect()
-            raise e
+            print(f"[ERROR] Serial connection failed: {e}")
+            self.ser = None
+            return False
     
     def read(self):
-        try:
-            while True:
+        print("[INFO] Start reading loop...")
+        while self.is_running:
+            # If port is closed - then reconnect
+            if self.ser is None or not self.ser.is_open:
+                self.on_disconnect()
+                continue
+
+            try:
                 line = self.ser.readline().decode("utf-8").strip()
                 if line:
                     print(f"[TRACE] Got line from serial port: {line}")
                     self.on_key_pressed_callback(line)
 
-        except serial.SerialException as e:
-            print(f"[ERROR] Serial: {e}")
-            self.on_disconnect()
-            raise e
-        except KeyboardInterrupt as e:
-            print("[INFO] SIGTERM received, stop")
-            raise e
-        finally:
-            if "ser" in locals() and self.ser.is_open:
-                self.ser.close()
-                print("[INFO] Arduino port closed")
-            return
+            except (serial.SerialException, OSError) as e:
+                print(f"[ERROR] Serial error during read: {e}")
+                if self.ser:
+                    try:
+                        self.ser.close()
+                    except Exception:
+                        pass
+                self.ser = None
+
+            except KeyboardInterrupt:
+                print("[INFO] SIGTERM received, stop")
+                self.is_running = False
+                break
+
+        # Close port
+        if self.ser and self.ser.is_open:
+            self.ser.close()
 
     def on_disconnect(self):
         print("[ERROR] Arduino disconnected, trying to reconnect in 3 seconds...")
-        self.try_to_connect()
-
-    def try_to_connect(self):
         time.sleep(3)
-        thread = threading.Thread(target=self.connect)
-        thread.start()
+        self.connect()
