@@ -45,5 +45,7 @@ chmod +x init/init.py
 
 Then just run the project:
 ```bash
-python3 main.py .env
+sudo ./scripts/run.sh
 ```
+
+`sudo` is needed for run because of `keyboard` lib needs root rights :(
