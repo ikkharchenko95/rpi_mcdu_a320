@@ -44,7 +44,7 @@ def main():
     devices = get_serial_devices()
 
     if not devices:
-        print("❌ Error: USB-Serial devices (Arduino) not found!")
+        print("X Error: USB-Serial devices (Arduino) not found!")
         return
 
     # Custom style settings for menu
@@ -75,7 +75,7 @@ def main():
     set_key(env_path, "ARDUINO_SERIAL_PORT", target_path)
 
     print("\n" + "=" * 50)
-    print("✅ Set up successfully!")
+    print("V Set up successfully!")
     print(f"Choosed: {option}")
     print(f"Stable /dev/serial-by-id path: {target_path}")
     print(f"Path saved in env file: {env_path}")
