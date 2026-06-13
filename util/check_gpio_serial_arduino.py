@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 
 # Настройка пинов (Используем нумерацию BCM)
-RX_PIN = 21
+RX_PIN = 20
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(RX_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
