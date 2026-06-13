@@ -1,11 +1,9 @@
 import serial
 import time
 
-# Подключаемся к аппаратному Serial-порту Малинки Linux
-# По умолчанию ttyAMA0 работает бритвенно четко на 115200 бод
 try:
     ser = serial.Serial(
-        port='/dev/ttyAMA0',
+        port='/dev/ttyS0',
         baudrate=115200,
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
