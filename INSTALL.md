@@ -1,20 +1,79 @@
-# Check serial on GPIO ports in Raspberry
+# Installation
 
-## pigpiod installation
+## pigpiod dependency installation as a system service
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y python3-setuptools python3-full wget make gcc
+sudo apt-get update &&\
+ sudo apt-get install -y python3-setuptools python3-full wget make gcc &&\
+ wget https://github.com/joan2937/pigpio/archive/refs/tags/v79.tar.gz &&\
+ tar zxf v79.tar.gz &&\
+ cd pigpio-79 && make && sudo make install &&\
+ sudo cp /home/user/pigpio-79 /opt/pigpio &&\
+ sudo ldconfig &&\
+ sudo vim /etc/systemd/system/pigpiod.service
+```
 
-wget https://github.com/joan2937/pigpio/archive/refs/tags/v79.tar.gz
-tar zxf v79.tar.gz
-cd pigpio-79; make; sudo make install
+Add this unit:
+```
+[Unit]
+Description=Pigpio daemon for GPIO control
+After=network.target
 
-sudo ldconfig
-sudo systemctl daemon-reload
-sudo systemctl enable --now pigpiod
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/pigpiod
+ExecStop=/bin/killall pigpiod
+Restart=on-failure
 
-sudo systemctl status pigpiod
+[Install]
+WantedBy=multi-user.target
+```
+
+Then
+```bash
+sudo systemctl daemon-reload &&\
+  sudo systemctl enable --now pigpiod &&\
+  sudo systemctl status pigpiod
+
+```
+
+## Project installation as a system service
+```bash
+git clone https://github.com/ikkharchenko95/rpi_mcdu_a320.git &&\
+  sudo cp rpi_mcdu_a320 /opt/rpi_mcdu_a320 &&\
+  sudo cp /opt/rpi_mcdu_a320/.env.template /opt/rpi_mcdu_a320/.env &&\
+  sudo apt-get install -y python3-venv &&\
+  python3 -m venv venv &&\
+  source venv/bin/activate &&\
+  pip install -r requirements.txt &&\
+  sudo chmod +x ./scripts/run.sh &&\
+  sudo chown -R $USER:$USER ./scripts/run.sh &&\
+  sudo vim /etc/systemd/system/mcdu_a320.service
+```
+
+Add this unit (don't forget to change your username):
+```
+[Unit]
+Description=MCDU Airbus A320 Flight Sim Board Service
+After=pigpiod.service
+
+[Service]
+Type=simple
+User=%YOUR_USERNAME%
+WorkingDirectory=/opt/rpi_mcdu_a320
+ExecStart=/bin/bash /opt/rpi_mcdu_a320/scripts/run.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Then enable and start service:
+```bash
+sudo systemctl daemon-reload &&\
+ sudo systemctl enable --now mcdu_a320.service &&\
+ sudo systemctl start mcdu_a320.service
 ```
 
 # ✈️ MCDU Interface Board Setup Guide
@@ -52,83 +111,3 @@ By default, Linux uses the hardware serial port to stream system boot logs and p
 4. When asked: *Would you like the serial port hardware to be enabled?* ➡️ Select **Yes**.
 5. Select **Finish** and choose **No** when asked to reboot (we will reboot after Step 2).
 
-### Step 2: Route Hardware UART to GPIO 20 & 21
-Since native hardware serial lines do not sit on pins 20/21 by default, we use a device tree overlay to re-route the hardware rails on a silicon level.
-
-1. Open the main system configuration file:
-   ```bash
-   sudo nano /boot/firmware/config.txt
-   ```
-   *(On older legacy OS versions, use: `sudo nano /boot/config.txt`)*
-
-2. Scroll to the very bottom of the file and append the following lines:
-   ```text
-   # Route hardware Mini-UART to MCDU data pins
-   dtoverlay=uart2,tx0_pin=20,rx0_pin=21
-   enable_uart=1
-   ```
-3. Save the file (`Ctrl + O`, then `Enter`) and exit (`Ctrl + X`).
-
-### Step 3: Apply Changes and Reboot
-Restart the Raspberry Pi to let the Linux kernel switch the physical routing matrix:
-```bash
-sudo reboot
-```
-
----
-
-## 🛡️ Device Persistence Warning (USB vs. GPIO)
-
-* **Why this setup is bulletproof:** Unlike external USB devices which dynamically change names after rebooting (e.g., drifting randomly between `/dev/ttyUSB0` and `/dev/ttyUSB1`), internal GPIO serial controllers are mapped to static hardware registers.
-* **The Result:** The device path **`/dev/ttyS0`** is tied permanently to **GPIO 20/21** on a hardware level. It will never drift or change names, eliminating the need for complex `udev` rules or `/dev/serial/by-id/` symbolic links.
-
----
-
-## 🐍 Python 3 Implementation Template
-
-Install the stable hardware serial wrapper:
-```bash
-pip3 install pyserial --break-system-packages
-```
-
-Run the following background listener (`mcdu_listener.py`):
-
-```python
-import serial
-import time
-
-SERIAL_PORT = '/dev/ttyS0' # Hardware-locked persistent path for GPIO 20/21
-BAUD_RATE = 115200
-
-try:
-    ser = serial.Serial(
-        port=SERIAL_PORT,
-        baudrate=BAUD_RATE,
-        parity=serial.PARITY_NONE,
-        stopbits=serial.STOPBITS_ONE,
-        bytesize=serial.EIGHTBITS,
-        timeout=1
-    )
-    print(f"✅ Hardware UART locked on {SERIAL_PORT} at {BAUD_RATE} Baud.")
-    print("🤖 MCDU LSK Matrix online. Awaiting keypress...\n")
-except Exception as e:
-    print(f"❌ Critical initialization failure: {e}")
-    exit()
-
-try:
-    while True:
-        if ser.in_waiting > 0:
-            # Native hardware buffer handles incoming bytes instantly
-            raw_data = ser.readline()
-            command = raw_data.decode('utf-8', errors='ignore').strip()
-            
-            if command and command.startswith("MCDU:LSK:"):
-                print(f"📥 [Frame Received]: {command}")
-                # Add your custom flight-sim event triggers here
-                
-        time.sleep(0.01)
-
-except KeyboardInterrupt:
-    ser.close()
-    print("\n👋 MCDU Service stopped safely.")
-```
