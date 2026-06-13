@@ -15,7 +15,6 @@ load_dotenv()
 def init_envs() -> dict:
     return {
         "ARDUINO_BAUDRATE": int(os.getenv("ARDUINO_BAUDRATE")),
-        "ARDUINO_SERIAL_TIMEOUT": int(os.getenv("ARDUINO_SERIAL_TIMEOUT")),
         "ARDUINO_RX_PIN": int(os.getenv("ARDUINO_RX_PIN")),
         "MCDU_TYPE": int(os.getenv("MCDU_TYPE")),
         "XPLANE_IP": os.getenv("XPLANE_IP"),
