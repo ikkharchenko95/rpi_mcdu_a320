@@ -12,4 +12,4 @@ if [ -f .env ]; then
     export $(grep -v '^#' .env | xargs)
 fi
 
-exec python3 main.py "$@"
+exec /opt/rpi_mcdu_a320/venv/bin/python3 main.py "$@"
