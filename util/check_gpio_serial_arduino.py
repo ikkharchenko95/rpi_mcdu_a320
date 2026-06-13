@@ -3,7 +3,7 @@ import time
 
 # НАСТРОЙКА: Пин 20 (который мы нашли), скорость подбираем под Ардуину
 RX_PIN = 20
-BAUD_RATE = 115200  # Если будут биться буквы, попробуйте: 115400, 116000 или 114800
+BAUD_RATE = 9600
 
 pi = pigpio.pi()
 if not pi.connected:
@@ -42,7 +42,7 @@ try:
                     # Выводим СЫРУЮ строку, чтобы видеть, пропадает ли мусор
                     print(f"📥 [Принято]: {clean_cmd}")
 
-                    if clean_command.startswith("MCDU:LSK:"):
+                    if clean_cmd.startswith("MCDU:LSK:"):
                         print("  🎯 СТРОКА ИДЕАЛЬНО СКЛЕЕНА БЕЗ МУСОРА!")
 
         time.sleep(0.01)
