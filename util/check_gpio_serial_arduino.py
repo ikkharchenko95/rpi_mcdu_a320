@@ -5,7 +5,7 @@ import time
 RX_PIN = 21
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(RX_PIN, GPIO.IN, pull_up_down=GPIO.PULL_UP)
+GPIO.setup(RX_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 print(f"📡 Высокоточный обработчик RPi.GPIO запущен на GPIO {RX_PIN}...")
 print("Слушаем нажатия LSK на скорости 115200 бод... (Выход: Ctrl+C)\n")
