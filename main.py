@@ -14,9 +14,9 @@ load_dotenv()
 
 def init_envs() -> dict:
     return {
-        "ARDUINO_SERIAL_PORT": os.getenv("ARDUINO_SERIAL_PORT"),
         "ARDUINO_BAUDRATE": int(os.getenv("ARDUINO_BAUDRATE")),
         "ARDUINO_SERIAL_TIMEOUT": int(os.getenv("ARDUINO_SERIAL_TIMEOUT")),
+        "ARDUINO_RX_PIN": int(os.getenv("ARDUINO_RX_PIN")),
         "MCDU_TYPE": int(os.getenv("MCDU_TYPE")),
         "XPLANE_IP": os.getenv("XPLANE_IP"),
         "XPLANE_PORT": int(os.getenv("XPLANE_PORT")),
@@ -40,13 +40,10 @@ def main():
         # Init Arduino key reader
         lsk_keys_reader = ArduinoKeyReader(
             on_key_pressed_callback=xpc.send_command,
-            serial_port=envs["ARDUINO_SERIAL_PORT"],
-            baudrate=envs["ARDUINO_BAUDRATE"],
-            timeout=envs["ARDUINO_SERIAL_TIMEOUT"]
+            rx_pin=envs["ARDUINO_RX_PIN"],
+            baudrate=envs["ARDUINO_BAUDRATE"]
         )
-        lsk_keys_reader_thread = threading.Thread(target=lsk_keys_reader.read,
-                                                  daemon=True)
-        lsk_keys_reader_thread.start()
+        lsk_keys_reader.start()
 
         # Init keyboard key reader
         keyboard_keys_reader = KeyboardKeyReader(

@@ -13,29 +13,11 @@ I just use the simple Bluetooth keyboard for process input A-Z, 0-9,
 some special chars (/, +-, etc.) and F1-F12 as a functional buttons (DIR, PERF etc.).  
 For process input from LSK keys, I use two circuit boards with 12 tact buttons: 6 from each side. 
 
-## Init
-1. Run:
-```bash
-chmod +x init/init.py
-init/init.py
-```
-
-2. Choose the device you want to use as an Arduino (for process LSK keys)
-
-## If you don't want to run init
-
-1. Manually run
-
-```bash
-lsusb -l
-```
-
-2. Get serial uid of your device
-
-3. Manually add `ARDUINO_SERIAL_PORT` env variable.
-
-
 ## Run project
+
+### Prerequisites
+
+Check this file: [INSTALL.md](INSTALL.md)
 
 Create your own .env file from .env.template file in root dir of the project, then run:
 
