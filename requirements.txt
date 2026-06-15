@@ -1,0 +1,7 @@
+serial
+keyboard
+pandas
+dotenv
+pick
+python-dotenv
+pigpio
